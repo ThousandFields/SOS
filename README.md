@@ -1,3 +1,5 @@
+![Banner](Assets/SOS_LOGO.png)
+
 # S.O.S. - Standard Operations Schematics
 
 **S.O.S.** is a high-performance recipe browser and material tracking utility for **Barotrauma**. Designed to be the ultimate companion for both vanilla and heavily modded campaigns (like Neurotrauma or BaroCraftables), it provides a seamless, integrated interface to explore the complex economy of Europa.
