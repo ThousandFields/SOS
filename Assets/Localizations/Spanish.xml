@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Latinamerican Spanish" nowhitespace="false" translatedname="Español Latinoamericano">
+	<Override>
+		<sos.command.name>sos</sos.command.name>
+		<sos.command.help>Abre/Cierra SOS.</sos.command.help>
+		<sos.client.init>[SOS] Client: Inicializado. Pulsa 'J' para abrir.</sos.client.init>
+		<sos.config.saved>[SOS] Configuración guardada (v[version]).</sos.config.saved>
+		<sos.config.save_error>[SOS] Fallo al guardar configuración: [error]</sos.config.save_error>
+		<sos.config.loaded>[SOS] Configuración v[version] cargada correctamente.</sos.config.loaded>
+		<sos.config.load_error>[SOS] Error al leer archivo de configuración: [error]</sos.config.load_error>
+		<sos.context.track>Rastrear al HUD</sos.context.track>
+		<sos.context.view_recipes>Ver Recetas</sos.context.view_recipes>
+		<sos.context.remove_favorite>Quitar de Favoritos</sos.context.remove_favorite>
+		<sos.context.add_favorite>Añadir a Favoritos</sos.context.add_favorite>
+		<sos.context.untrack>Quitar del HUD</sos.context.untrack>
+		<sos.context.track_recipe>Añadir al HUD</sos.context.track_recipe>
+		<sos.context.recipe_options>Opción de Receta</sos.context.recipe_options>
+		<sos.window.title>SOS - Buscador de Recetas</sos.window.title>
+		<sos.window.clear_hud>Limpiar HUD</sos.window.clear_hud>
+		<sos.window.search_placeholder>Buscar objeto...</sos.window.search_placeholder>
+		<sos.window.obtain>OBTENCIÓN</sos.window.obtain>
+		<sos.window.usage>USOS</sos.window.usage>
+		<sos.window.additional_info>INFO ADICIONAL</sos.window.additional_info>
+		<sos.hud.tracking>RASTREANDO:</sos.hud.tracking>
+		<sos.item.header_info>ID: [id] | Precio: [price] mr</sos.item.header_info>
+		<sos.item.id>ID:</sos.item.id>
+		<sos.item.price>Precio:</sos.item.price>
+		<sos.item.max_stack>Max Stack:</sos.item.max_stack>
+		<sos.item.description>DESCRIPCIÓN:</sos.item.description>
+		<sos.item.tags>TAGS:</sos.item.tags>
+		<sos.recipe.hand>Mano</sos.recipe.hand>
+		<sos.recipe.deconstructor>DECONSTRUCTOR</sos.recipe.deconstructor>
+		<sos.recipe.random_outputs>Da [amount] al azar:</sos.recipe.random_outputs>
+		<sos.recipe.deconstructing>DECONSTRUYENDO:</sos.recipe.deconstructing>
+		<sos.shared.loaded>[SOS] Cargado correctamente.</sos.shared.loaded>
+		<sos.shared.unloaded>[SOS] Mod descargado.</sos.shared.unloaded>
+		<sos.recipe.unlocked>Receta Desbloqueada</sos.recipe.unlocked>
+		<sos.recipe.locked>Requiere Receta para Desbloquear</sos.recipe.locked>
+	</Override>
+</infotexts>

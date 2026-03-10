@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="English" nowhitespace="false" translatedname="English">
+	<Override>
+		<sos.command.name>sos</sos.command.name>
+		<sos.command.help>Open/Close SOS.</sos.command.help>
+		<sos.client.init>[SOS] Client: Initialized. Press 'J' to open.</sos.client.init>
+		<sos.config.saved>[SOS] Settings saved (v[version]).</sos.config.saved>
+		<sos.config.save_error>[SOS] Failed to save settings: [error]</sos.config.save_error>
+		<sos.config.loaded>[SOS] Settings v[version] loaded successfully.</sos.config.loaded>
+		<sos.config.load_error>[SOS] Error reading settings file: [error]</sos.config.load_error>
+		<sos.context.track>Track to HUD</sos.context.track>
+		<sos.context.view_recipes>View Recipes</sos.context.view_recipes>
+		<sos.context.remove_favorite>Remove from Favorites</sos.context.remove_favorite>
+		<sos.context.add_favorite>Add to Favorites</sos.context.add_favorite>
+		<sos.context.untrack>Remove from HUD</sos.context.untrack>
+		<sos.context.track_recipe>Add to HUD</sos.context.track_recipe>
+		<sos.context.recipe_options>Recipe Options</sos.context.recipe_options>
+		<sos.window.title>SOS - Recipe Browser</sos.window.title>
+		<sos.window.clear_hud>Clear HUD</sos.window.clear_hud>
+		<sos.window.search_placeholder>Search item...</sos.window.search_placeholder>
+		<sos.window.obtain>OBTAIN</sos.window.obtain>
+		<sos.window.usage>USAGE</sos.window.usage>
+		<sos.window.additional_info>ADDITIONAL INFO</sos.window.additional_info>
+		<sos.hud.tracking>TRACKING:</sos.hud.tracking>
+		<sos.item.header_info>ID: [id] | Price: [price] mk</sos.item.header_info>
+		<sos.item.id>ID:</sos.item.id>
+		<sos.item.price>Price:</sos.item.price>
+		<sos.item.max_stack>Max Stack:</sos.item.max_stack>
+		<sos.item.description>DESCRIPTION:</sos.item.description>
+		<sos.item.tags>TAGS:</sos.item.tags>
+		<sos.recipe.hand>Hand</sos.recipe.hand>
+		<sos.recipe.deconstructor>DECONSTRUCTOR</sos.recipe.deconstructor>
+		<sos.recipe.random_outputs>Gives [amount] at random:</sos.recipe.random_outputs>
+		<sos.recipe.deconstructing>DECONSTRUCTING:</sos.recipe.deconstructing>
+		<sos.shared.loaded>[SOS] Loaded Successfully.</sos.shared.loaded>
+		<sos.shared.unloaded>[SOS] Mod Unloaded.</sos.shared.unloaded>
+		<sos.recipe.unlocked>Recipe Unlocked</sos.recipe.unlocked>
+		<sos.recipe.locked>Requires Recipe to Unlock</sos.recipe.locked>
+	</Override>
+</infotexts>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentpackage name="S.O.S - Standard Operations Schematics" description="The ultimate recipe browser and ingredient tracker." modversion="0.3.1b" gameversion="1.11.5.0" corepackage="false">
+	<Text file="%ModDir%/Localizations/English.xml" />
+	<Text file="%ModDir%/Localizations/Spanish.xml" />
+</contentpackage>

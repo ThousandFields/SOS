@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>ModAssets</RootNamespace>
+        <Platforms>AnyCPU;x64</Platforms>
+    </PropertyGroup>
+
+    <Import Project="../Build.props" />
+    
+    <ItemGroup>
+      <Content Include="..\README.md">
+        <Link>README.md</Link>
+      </Content>
+    </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\LICENCE">
+			<Link>LICENCE</Link>
+		</Content>
+	</ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Content" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Localizations" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="filelist.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="metadata.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+    <Target Name="CopyFiles" AfterTargets="Build">
+        <ItemGroup>
+            <FileList Include="$(ProjectDir)filelist.xml" />
+			<Metadata Include="$(ProjectDir)metadata.xml" />
+            <RunConfig Include="$(ProjectDir)RunConfig.xml" />
+            <Content Include="$(ProjectDir)Content\**\*.*" />
+			<Localization Include="$(ProjectDir)Localizations\**\*.*" />
+        </ItemGroup>
+		<Copy SourceFiles="@(FileList)" DestinationFiles="$(ModDeployDir)filelist.xml" />
+		<Copy SourceFiles="@(Metadata)" DestinationFiles="$(ModDeployDir)metadata.xml" />
+		<Copy SourceFiles="@(LICENCE)" DestinationFiles="$(ModDeployDir)LICENCE" />
+        <Copy SourceFiles="@(RunConfig)" DestinationFiles="$(ModDeployDir)CSharp\RunConfig.xml" />
+        <Copy SourceFiles="@(Content)" DestinationFolder="$(ModDeployDir)Content\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Localization)" DestinationFolder="$(ModDeployDir)Localizations\%(RecursiveDir)" />
+    </Target>
+
+
+</Project>
