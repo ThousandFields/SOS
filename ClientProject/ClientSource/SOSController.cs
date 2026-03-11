@@ -96,92 +96,42 @@ namespace SOS
         {
             if (!isDirty) return;
 
-            try
+            var data = new SettingsData
             {
-                XDocument doc = new XDocument(
-                    new XElement("SOSSettings",
-                        new XAttribute("version", CurrentSaveVersion),
+                Favorites = this.FavoritedItems,
+                LastSearchQuery = this.LastSearchQuery,
+                LastItemId = this.CurrentItem?.Identifier.Value ?? "",
+                TrackedItemId = this.Tracker.TrackedItem?.Identifier.Value ?? "",
+                TrackedRecipeHash = this.Tracker.TrackedRecipe?.RecipeHash ?? 0
+            };
 
-                        new XElement("Favorites",
-                            FavoritedItems.Select(f => new XElement("Item", new XAttribute("id", f)))
-                        ),
-
-                        new XElement("State",
-                            new XAttribute("lastItem", CurrentItem?.Identifier.Value ?? ""),
-                            new XAttribute("lastSearch", LastSearchQuery ?? "")
-                        ),
-
-                        new XElement("Tracker",
-                            new XAttribute("targetId", Tracker.TrackedItem?.Identifier.Value ?? ""),
-                            new XAttribute("recipeHash", Tracker.TrackedRecipe?.RecipeHash.ToString() ?? "0")
-                        )
-                    )
-                );
-
-                doc.Save(configPath);
-                isDirty = false;
-                LuaCsLogger.LogMessage(TextSOS.Get("sos.config.saved", "[SOS] Settings saved (v[version]).").Replace("[version]", CurrentSaveVersion.ToString()).Value);
-            }
-            catch (Exception e)
-            {
-                LuaCsLogger.LogError(TextSOS.Get("sos.config.save_error", "[SOS] Failed to save settings: [error]").Replace("[error]", e.Message).Value);
-            }
+            SettingsManager.Save(data);
+            isDirty = false;
         }
 
         public void LoadSettings()
         {
-            if (!File.Exists(configPath)) return;
+            var data = SettingsManager.Load();
 
-            try
+            foreach (var fav in data.Favorites) FavoritedItems.Add(fav);
+
+            LastSearchQuery = data.LastSearchQuery;
+
+            if (!string.IsNullOrEmpty(data.LastItemId))
             {
-                XDocument doc = XDocument.Load(configPath);
-                XElement? root = doc.Element("SOSSettings");
-                if (root == null) return;
-
-                int fileVersion = int.Parse(root.Attribute("version")?.Value ?? "0");
-
-                if (fileVersion >= 1)
-                {
-                    var favs = root.Element("Favorites")?.Elements("Item");
-                    if (favs != null)
-                    {
-                        foreach (var f in favs) FavoritedItems.Add(f.Attribute("id")?.Value ?? "");
-                    }
-
-                    var state = root.Element("State");
-                    if (state != null)
-                    {
-                        LastSearchQuery = state.Attribute("lastSearch")?.Value ?? "";
-                        string lastItemId = state.Attribute("lastItem")?.Value ?? "";
-
-                        if (!string.IsNullOrEmpty(lastItemId))
-                        {
-                            CurrentItem = ItemPrefab.Prefabs.FirstOrDefault(p => p.Identifier.Value == lastItemId);
-                        }
-                    }
-
-                    var tracker = root.Element("Tracker");
-                    if (tracker != null)
-                    {
-                        string targetId = tracker.Attribute("targetId")?.Value ?? "";
-                        uint recipeHash = uint.Parse(tracker.Attribute("recipeHash")?.Value ?? "0");
-
-                        var targetPrefab = ItemPrefab.Prefabs.FirstOrDefault(p => p.Identifier.Value == targetId);
-                        if (targetPrefab != null)
-                        {
-                            var specificRecipe = targetPrefab.FabricationRecipes?.Values
-                                .FirstOrDefault(r => r.RecipeHash == recipeHash);
-
-                            Tracker.SetTrackedItem(targetPrefab, specificRecipe);
-                        }
-                    }
-                }
-
-                LuaCsLogger.LogMessage(TextSOS.Get("sos.config.loaded", "[SOS] Settings v[version] loaded successfully.").Replace("[version]", fileVersion.ToString()).Value);
+                CurrentItem = ItemPrefab.Prefabs.FirstOrDefault(p => p.Identifier.Value == data.LastItemId);
             }
-            catch (Exception e)
+
+            if (!string.IsNullOrEmpty(data.TrackedItemId))
             {
-                LuaCsLogger.LogError(TextSOS.Get("sos.config.load_error", "[SOS] Error reading settings file: [error]").Replace("[error]", e.Message).Value);
+                var targetPrefab = ItemPrefab.Prefabs.FirstOrDefault(p => p.Identifier.Value == data.TrackedItemId);
+                if (targetPrefab != null)
+                {
+                    var specificRecipe = targetPrefab.FabricationRecipes?.Values
+                        .FirstOrDefault(r => r.RecipeHash == data.TrackedRecipeHash);
+
+                    Tracker.SetTrackedItem(targetPrefab, specificRecipe);
+                }
             }
         }
 

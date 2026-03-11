@@ -8,6 +8,15 @@ namespace SOS
 {
     public static class RecipeAnalyzer
     {
+        private static readonly Dictionary<Identifier, List<Tuple<ItemPrefab, FabricationRecipe>>> usesCache = new Dictionary<Identifier, List<Tuple<ItemPrefab, FabricationRecipe>>>();
+        private static readonly Dictionary<Identifier, List<ItemPrefab>> sourcesCache = new Dictionary<Identifier, List<ItemPrefab>>();
+
+        public static void ClearSessionCache()
+        {
+            usesCache.Clear();
+            sourcesCache.Clear();
+        }
+
         public static List<FabricationRecipe> GetCraftingRecipes(ItemPrefab item)
             => item.FabricationRecipes?.Values.ToList() ?? new List<FabricationRecipe>();
 
@@ -16,6 +25,13 @@ namespace SOS
 
         public static List<Tuple<ItemPrefab, FabricationRecipe>> GetUsesAsIngredient(ItemPrefab targetItem)
         {
+            if (targetItem == null) return new List<Tuple<ItemPrefab, FabricationRecipe>>();
+
+            if (usesCache.TryGetValue(targetItem.Identifier, out var cachedResult))
+            {
+                return cachedResult;
+            }
+
             var results = new List<Tuple<ItemPrefab, FabricationRecipe>>();
             foreach (var prefab in ItemPrefab.Prefabs)
             {
@@ -28,11 +44,20 @@ namespace SOS
                     }
                 }
             }
+
+            usesCache[targetItem.Identifier] = results;
             return results;
         }
 
         public static List<ItemPrefab> GetSourcesFromDeconstruction(ItemPrefab targetItem)
         {
+            if (targetItem == null) return new List<ItemPrefab>();
+
+            if (sourcesCache.TryGetValue(targetItem.Identifier, out var cachedResult))
+            {
+                return cachedResult;
+            }
+
             var results = new List<ItemPrefab>();
             foreach (var prefab in ItemPrefab.Prefabs)
             {
@@ -41,8 +66,9 @@ namespace SOS
                     results.Add(prefab);
                 }
             }
+
+            sourcesCache[targetItem.Identifier] = results;
             return results;
         }
     }
-
 }

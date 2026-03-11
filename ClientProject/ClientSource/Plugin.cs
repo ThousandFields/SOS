@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace SOS
 {
+    // Client-specific code
     public partial class Plugin : IAssemblyPlugin
     {
         private SOSController? controller;

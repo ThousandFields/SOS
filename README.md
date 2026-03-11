@@ -12,11 +12,11 @@
 
 **S.O.S.** is a high-performance recipe browser and material tracking utility for **Barotrauma**. Designed to be the ultimate companion for both vanilla and heavily modded campaigns (like Neurotrauma or BaroCraftables), it provides a seamless, integrated interface to explore the complex economy of Europa.
 
-[![Add from Workshop](https://img.shields.io/badge/Add_From-Steam_Workshop-2b2f33?style=for-the-badge)](https://steamcommunity.com/sharedfiles/filedetails/?id=3682891282)
+[![Add from Workshop](https://img.shields.io/badge/Add_From-Steam_Workshop-1B2838?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/sharedfiles/filedetails/?id=3682891282)
 
 **Or**
 
-[![Manually Download Latest Version](https://img.shields.io/badge/Download_Latest_Version_Here-2b2f33?style=for-the-badge)](https://github.com/Retype15/SOS/releases/latest/download/SOS.zip)
+[![Manually Download Latest Version](https://img.shields.io/badge/Manually_Download_Latest_Version-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Retype15/SOS/releases/latest/download/SOS.zip)
 
 ## Key Features
 

@@ -1,0 +1,130 @@
+﻿// Copyright (c) 2026 Retype15
+// This file is licensed under the GNU GPLv3.
+// See the LICENSE file in the project root for details.
+
+using Barotrauma;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
+
+namespace SOS
+{
+    public class SettingsData
+    {
+        public HashSet<string> Favorites { get; set; } = new HashSet<string>();
+        public string LastSearchQuery { get; set; } = "";
+        public string LastItemId { get; set; } = "";
+        public string TrackedItemId { get; set; } = "";
+        public uint TrackedRecipeHash { get; set; } = 0;
+    }
+
+    public static class SettingsManager
+    {
+        private const int CurrentSaveVersion = 1;
+        private const string ConfigPath = "SOS_Settings.xml";
+
+        public static void Save(SettingsData data)
+        {
+            try
+            {
+                XDocument doc = new XDocument(
+                    new XElement("SOSSettings",
+                        new XAttribute("version", CurrentSaveVersion),
+
+                        new XElement("Favorites",
+                            data.Favorites.Select(f => new XElement("Item", new XAttribute("id", f)))
+                        ),
+
+                        new XElement("State",
+                            new XAttribute("lastItem", data.LastItemId ?? ""),
+                            new XAttribute("lastSearch", data.LastSearchQuery ?? "")
+                        ),
+
+                        new XElement("Tracker",
+                            new XAttribute("targetId", data.TrackedItemId ?? ""),
+                            new XAttribute("recipeHash", data.TrackedRecipeHash.ToString())
+                        )
+                    )
+                );
+
+                doc.Save(ConfigPath);
+#if DEBUG
+                LuaCsLogger.LogMessage(TextSOS.Get("sos.config.saved", $"[SOS] Settings saved (v{CurrentSaveVersion}).").Value);
+#endif
+            }
+            catch (Exception e)
+            {
+                LuaCsLogger.LogError(TextSOS.Get("sos.config.save_error", $"[SOS] Failed to save settings: {e.Message}").Value);
+            }
+        }
+
+        public static SettingsData Load()
+        {
+            var data = new SettingsData();
+            if (!File.Exists(ConfigPath)) return data;
+
+            try
+            {
+                XDocument doc = XDocument.Load(ConfigPath);
+                XElement? root = doc.Element("SOSSettings");
+                if (root == null) return data;
+
+                int fileVersion = int.Parse(root.Attribute("version")?.Value ?? "0");
+
+                if (fileVersion >= 1)
+                {
+                    var favs = root.Element("Favorites")?.Elements("Item");
+                    if (favs != null)
+                    {
+                        foreach (var f in favs) data.Favorites.Add(f.Attribute("id")?.Value ?? "");
+                    }
+
+                    var state = root.Element("State");
+                    if (state != null)
+                    {
+                        data.LastSearchQuery = state.Attribute("lastSearch")?.Value ?? "";
+                        data.LastItemId = state.Attribute("lastItem")?.Value ?? "";
+                    }
+
+                    var tracker = root.Element("Tracker");
+                    if (tracker != null)
+                    {
+                        data.TrackedItemId = tracker.Attribute("targetId")?.Value ?? "";
+                        uint.TryParse(tracker.Attribute("recipeHash")?.Value, out uint hash);
+                        data.TrackedRecipeHash = hash;
+                    }
+                }
+#if DEBUG
+                LuaCsLogger.LogMessage(TextSOS.Get("sos.config.loaded", $"[SOS] Settings v{fileVersion} loaded successfully.").Value);
+#endif
+            }
+            catch (Exception e)
+            {
+                LuaCsLogger.LogError(TextSOS.Get("sos.config.load_error", $"[SOS] Error reading settings file: {e.Message}").Value);
+            }
+
+            return data;
+        }
+    }
+
+    public class SettingsMenu
+    {
+        private GUIFrame? settingsFrame;
+
+        public void OpenMenu(GUIComponent parent)
+        {
+            // TODO
+        }
+
+        public void CloseMenu()
+        {
+            if (settingsFrame != null)
+            {
+                settingsFrame.Parent.RemoveChild(settingsFrame);
+                settingsFrame = null;
+            }
+        }
+    }
+}

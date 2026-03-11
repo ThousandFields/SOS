@@ -22,7 +22,11 @@ namespace SOS
 
         public void OnLoadCompleted()
         {
+            TextManager.VerifyLanguageAvailable();
             LuaCsLogger.LogMessage(TextSOS.Get("sos.shared.loaded", "[SOS] Loaded Successfully.").Value);
+#if DEBUG
+            LuaCsLogger.LogMessage(TextSOS.Get("sos.shared.debugmode", "[SOS] Debug Mode is enabled.").Value);
+#endif
         }
 
         public void PreInitPatching() { }
@@ -30,6 +34,7 @@ namespace SOS
         public void Dispose()
         {
 #if CLIENT
+            RecipeAnalyzer.ClearSessionCache();
             DisposeClient();
 #endif
             LuaCsLogger.LogMessage(TextSOS.Get("sos.shared.unloaded", "[SOS] Mod Unloaded.").Value);
@@ -39,9 +44,15 @@ namespace SOS
 
     public static class TextSOS
     {
-        public static LocalizedString Get(string key, string fallback)
+        public static LocalizedString Get(string key, string fallback = "")
         {
-            return TextManager.Get(key).Fallback(fallback);
+            var text = TextManager.Get(key);
+
+            if (!string.IsNullOrEmpty(fallback))
+            {
+                return text.Fallback("[NT]" + fallback); // NT=NOT-TRANSLATED, to identify missing translations
+            }
+            return text;
         }
     }
 }
