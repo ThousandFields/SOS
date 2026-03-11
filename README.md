@@ -14,8 +14,6 @@
 
 [![Download Latest Version Here](https://img.shields.io/badge/Download_Latest_Version_Here-2b2f33?style=for-the-badge)](https://github.com/Retype15/SOS/releases/latest/download/SOS.zip)
 
-## Official Sites
-
 ## Key Features
 
 - **Comprehensive Browser:** View Fabrication, Deconstruction, and "Used In" recipes for any item in the game.
@@ -59,6 +57,17 @@ In future updates, access to the S.O.S. interface will be gated behind a **Chip 
 ---
 *Stay tuned for these updates as we move toward the 1.0 Full Release.*
 
+## Common questions
+
+**Q:** *Can it be used on vanilla servers?*
+**A:** Absolutely. The most it will require from the server is new items, nothing more.
+
+**Q:** *Is this a client-only mod, or does it need to be included on the server?*
+**A:** Currently, it's entirely client-only. We plan for it to always be client-only, so you can use it even on a completely vanilla server without mods. If the server doesn't have it, then the full system unlocked in the beta version will be used.
+
+**Q:** *Is it really compatible with ALL in-game items?*
+**A:** *Yes! Absolutely everything, including submarine parts that are impossible to obtain. I've decided not to exclude these items for now for descriptions and another useful metadata. If they bother you, you can create an issue in the Git project, leave a comment on itch.io, or contact me directly, and I'll prioritize it.*
+
 ## License & Copyright
 
 This project is licensed under the [S.O.S. Custom Permissive License (SCPL)](https://github.com/Retype15/SOS?tab=License-1-ov-file).
@@ -67,7 +76,7 @@ This project is licensed under the [S.O.S. Custom Permissive License (SCPL)](htt
 
 - **Personal Use:** You are free to use, modify, and study the code for personal purposes.
 - **Attribution:** Redistribution on third-party sites or GitHub is allowed provided that full credit is given to the author (@Retype15) and a link to the original repository is included.
-- **⚠️ Exclusive Distribution:** The Author reserves the **sole and exclusive right** to publish and manage this Software on the **Steam Workshop**. Re-uploading this mod to the Workshop by anyone other than @Retype15 is strictly prohibited and will result in a DMCA notice.
+- **Exclusive Distribution:** The Author reserves the **sole and exclusive right** to publish and manage this Software on the **Steam Workshop**. Re-uploading this mod to the Workshop by anyone other than @Retype15 is strictly prohibited and will result in a DMCA notice.
 - **Non-Commercial:** This mod cannot be sold or included in any paid services/paywalls.
 
 ---
