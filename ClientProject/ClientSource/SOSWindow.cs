@@ -33,7 +33,12 @@ namespace SOS
             var parentComponent = Screen.Selected?.Frame;
             if (parentComponent == null) return;
 
-            mainFrame = new GUIFrame(new RectTransform(new Vector2(0.95f, 0.9f), parentComponent.RectTransform, Anchor.Center), "InnerFrame") { CanBeFocused = true };
+            mainFrame = new GUIFrame(new RectTransform(new Vector2(0.95f, 0.9f), parentComponent.RectTransform, Anchor.Center), "InnerFrame")
+            {
+                CanBeFocused = true,
+                Selected = true,
+                Color = Color.Black * 0.7f
+            };
 
             var topBar = new GUIFrame(new RectTransform(new Vector2(1.0f, 0.05f), mainFrame.RectTransform, Anchor.TopCenter), "GUIFrameBottom");
             _ = new GUITextBlock(new RectTransform(Vector2.One, topBar.RectTransform), TextSOS.Get("sos.window.title", "SOS - Recipe Browser"), textAlignment: Alignment.Center, font: GUIStyle.LargeFont);
@@ -53,15 +58,30 @@ namespace SOS
             var searchContainer = new GUIFrame(new RectTransform(new Vector2(1f, 0.04f), leftPanel.RectTransform), style: "InnerFrame");
             searchBox = GUI.CreateTextBoxWithPlaceholder(searchContainer.RectTransform, controller.LastSearchQuery, TextSOS.Get("sos.window.search_placeholder", "Search item..."));
             searchBox.OnTextChanged += (_, text) => { controller.LastSearchQuery = text; UpdateSearch(text); return true; };
-            itemList = new GUIListBox(new RectTransform(new Vector2(1f, 0.95f), leftPanel.RectTransform), style: "PowerButtonFrame") { Padding = new Vector4(8, 5, 5, 5) };
+            itemList = new GUIListBox(new RectTransform(new Vector2(1f, 0.95f), leftPanel.RectTransform), style: "PowerButtonFrame")
+            {
+                Padding = new Vector4(8, 5, 5, 5),
+                Color = Color.Black * 0.2f
+            };
 
-            var centerPanel = new GUILayoutGroup(new RectTransform(new Vector2(0.53f, 1f), contentArea.RectTransform)) { Stretch = true, RelativeSpacing = 0.005f };
-            detailsHeader = new GUIFrame(new RectTransform(new Vector2(1f, 0.1f), centerPanel.RectTransform), style: "CircuitBoxFrame") { Color = Color.Black * 0.4f };
+            var centerPanel = new GUILayoutGroup(new RectTransform(new Vector2(0.53f, 1f), contentArea.RectTransform))
+            {
+                Stretch = true,
+                RelativeSpacing = 0.005f
+            };
+            detailsHeader = new GUIFrame(new RectTransform(new Vector2(1f, 0.1f), centerPanel.RectTransform), style: "CircuitBoxFrame")
+            {
+                Color = Color.Black * 0.4f
+            };
             var recipeSplit = new GUILayoutGroup(new RectTransform(new Vector2(1f, 0.89f), centerPanel.RectTransform), isHorizontal: true) { Stretch = true, RelativeSpacing = 0.01f };
 
             var leftRecipeCol = new GUILayoutGroup(new RectTransform(new Vector2(0.5f, 1f), recipeSplit.RectTransform)) { Stretch = true };
             _ = new GUITextBlock(new RectTransform(new Vector2(1f, 0.05f), leftRecipeCol.RectTransform), TextSOS.Get("sos.window.obtain", "OBTAIN"), font: GUIStyle.SubHeadingFont, textColor: Color.LightGreen, textAlignment: Alignment.Center);
-            colObtain = new GUIListBox(new RectTransform(new Vector2(1f, 0.95f), leftRecipeCol.RectTransform), style: "GUIBackgroundBlocker") { Spacing = 5 }; //PowerButtonFrame
+            colObtain = new GUIListBox(new RectTransform(new Vector2(1f, 0.95f), leftRecipeCol.RectTransform), style: "GUIBackgroundBlocker")
+            {
+                Spacing = 5,
+                Color = Color.Black * 0.3f
+            };
 
             var rightRecipeCol = new GUILayoutGroup(new RectTransform(new Vector2(0.5f, 1f), recipeSplit.RectTransform)) { Stretch = true };
             _ = new GUITextBlock(new RectTransform(new Vector2(1f, 0.05f), rightRecipeCol.RectTransform), TextSOS.Get("sos.window.usage", "USAGE"), font: GUIStyle.SubHeadingFont, textColor: Color.Cyan, textAlignment: Alignment.Center);
@@ -82,8 +102,31 @@ namespace SOS
 
         public void UpdateNavigationButtons()
         {
-            if (btnBack != null) btnBack.Enabled = controller.HistoryBack.Count > 0;
-            if (btnForward != null) btnForward.Enabled = controller.HistoryForward.Count > 0;
+            if (btnBack != null)
+            {
+                btnBack.Enabled = controller.HistoryBack.Count > 0;
+                if (btnBack.Enabled)
+                {
+                    var prevItem = controller.HistoryBack.Peek();
+
+                    var (navBackName, navBackColor) = SafeItemName.Get(prevItem, Color.White);
+
+                    btnBack.ToolTip = $"{TextSOS.Get("sos.window.back", "Back")}: ‖color:{navBackColor}‖{navBackName}‖color:end‖";
+                }
+            }
+
+            if (btnForward != null)
+            {
+                btnForward.Enabled = controller.HistoryForward.Count > 0;
+                if (btnForward.Enabled)
+                {
+                    var nextItem = controller.HistoryForward.Peek();
+
+                    var (navForwardName, navForwardColor) = SafeItemName.Get(nextItem, Color.White);
+
+                    btnForward.ToolTip = $"{TextSOS.Get("sos.window.forward", "Forward")}: ‖color:{navForwardColor}‖{navForwardName}‖color:end‖";
+                }
+            }
         }
 
         public void RefreshSearch() => UpdateSearch(searchBox?.Text ?? "");
@@ -178,8 +221,8 @@ namespace SOS
             }
         }
 
-        public void UpdateDetailsPanel(ItemPrefab targetItem, List<FabricationRecipe> craft, List<DeconstructItem> decon, List<Tuple<ItemPrefab, FabricationRecipe>> uses, List<ItemPrefab> sources)
-        {   
+        public void UpdateDetailsPanel(ItemPrefab targetItem, List<FabricationRecipe> craft, List<DeconstructItem> decon, List<Tuple<ItemPrefab, FabricationRecipe>> uses, List<Tuple<ItemPrefab, DeconstructItem>> sources)
+        {
             activeDropdowns.Clear();
             if (detailsHeader == null || colObtain == null || colUsage == null || metaPanel == null) return;
             metaPanel.Content.ClearChildren();
@@ -189,33 +232,81 @@ namespace SOS
             Sprite? icon = targetItem.InventoryIcon ?? targetItem.Sprite;
             if (icon != null)
             {
-                var imgFrame = new GUIFrame(new RectTransform(new Vector2(0.15f, 0.9f), headerLayout.RectTransform, Anchor.CenterLeft), style: null);
-                _ = new GUIImage(new RectTransform(new Vector2(0.8f, 0.8f), imgFrame.RectTransform, Anchor.Center), icon, scaleToFit: true) { Color = targetItem.InventoryIconColor };
+                var imgFrame = new GUIFrame(new RectTransform(new Vector2(0.15f, 0.9f), headerLayout.RectTransform, Anchor.CenterLeft), style: null)
+                {
+                    ToolTip = CardBuilder.GetDetailedTooltip(targetItem)
+                };
+                _ = new GUIImage(new RectTransform(new Vector2(0.8f, 0.8f), imgFrame.RectTransform, Anchor.Center), icon, scaleToFit: true) { Color = targetItem.InventoryIconColor, CanBeFocused = false };
             }
-            _ = new GUITextBlock(new RectTransform(new Vector2(0.8f, 1f), headerLayout.RectTransform), targetItem.Name.Value, font: GUIStyle.LargeFont, textColor: Color.White, textAlignment: Alignment.CenterLeft);
 
-            Action<ItemPrefab> onPrimary = (p) => controller.OnItemSelected(p);
-            Action<ItemPrefab> onSecondary = (p) => controller.OpenContextMenu(p);
-            
+            var (headerName, headerColor) = SafeItemName.Get(targetItem, Color.White);
+
+            _ = new GUITextBlock
+            (
+                new RectTransform(new Vector2(0.8f, 1f), headerLayout.RectTransform),
+                headerName,
+                font: GUIStyle.LargeFont,
+                textColor: headerColor,
+                textAlignment: Alignment.CenterLeft
+            );
+
+            void onPrimary(ItemPrefab p) => controller.OnItemSelected(p);
+            void onSecondary(ItemPrefab p) => controller.OpenContextMenu(p);
+
+            var groupedSources = sources
+                .GroupBy(s => new
+                {
+                    SourceId = s.Item1.Identifier,
+                    MachineKey = string.Join(",", s.Item2.RequiredDeconstructor.Select(id => id.Value).OrderBy(x => x)),
+                    OtherItemsKey = string.Join(",", s.Item2.RequiredOtherItem.Select(id => id.Value).OrderBy(x => x))
+                })
+                .Select(group => new GroupedSource
+                {
+                    SourceItem = group.First().Item1,
+                    MachineIds = group.First().Item2.RequiredDeconstructor,
+                    RequiredOtherItems = group.First().Item2.RequiredOtherItem.ToList(),
+                    TotalCommonness = group.Sum(g => g.Item2.Commonness),
+                    IsRandom = group.First().Item1.RandomDeconstructionOutput
+                })
+                .ToList();
+
             colObtain.Content.ClearChildren();
             foreach (var r in craft) CardBuilder.DrawCraftCard(colObtain, r, targetItem, controller, onPrimary, onSecondary);
-            foreach (var s in sources) CardBuilder.DrawSourceCard(colObtain, s, onPrimary, onSecondary);
-            
+            foreach (var src in groupedSources) CardBuilder.DrawSourceCard(colObtain, src, onPrimary, onSecondary);
+
+            var currentItemId = targetItem.Identifier;
+            var groupedUses = uses
+                .GroupBy(u => new
+                {
+                    ResultId = u.Item1.Identifier,
+                    ReqAmount = u.Item2.RequiredItems.FirstOrDefault(ri =>
+                        ri.ItemPrefabs.Any(p => p.Identifier == currentItemId))?.Amount ?? 1
+                })
+                .Select(group => new GroupedUsage
+                {
+                    TargetItem = group.First().Item1,
+                    MachineIds = group.SelectMany(g => g.Item2.SuitableFabricatorIdentifiers).Distinct().ToList(),
+                    AmountCreated = group.First().Item2.Amount,
+                    AmountRequired = group.Key.ReqAmount
+                })
+                .OrderBy(gu => gu.TargetItem.Name.Value)
+                .ToList();
+
             colUsage.Content.ClearChildren();
             if (decon.Count > 0) CardBuilder.DrawDeconCard(colUsage, targetItem, decon, onPrimary, onSecondary);
-            foreach (var u in uses) CardBuilder.DrawUseCard(colUsage, u, onPrimary, onSecondary);
+            foreach (var usage in groupedUses) CardBuilder.DrawUseCard(colUsage, usage, onPrimary, onSecondary);
 
 
             var onBadgeClick = (string tag) => { if (searchBox != null) searchBox.Text = tag; UpdateSearch(tag); };
 
             var builder = new SectionBuilder
             (
-                metaPanel, 
-                onBadgeClick, 
-                controller, 
-                onPrimary, 
+                metaPanel,
+                onBadgeClick,
+                controller,
+                onPrimary,
                 onSecondary
-            ); 
+            );
 
             var analysis = RecipeAnalyzer.GetAnalysis(targetItem);
 
@@ -224,11 +315,24 @@ namespace SOS
             {
                 section.Draw(builder);
             }
-
-            //metaPanel.RecalculateChildren();
-            //metaPanel.UpdateScrollBarSize();
-            //metaPanel.ScrollBar.BarScroll = 0;
         }
+    }
+
+    public class GroupedSource
+    {
+        public ItemPrefab SourceItem;
+        public Identifier[] MachineIds;
+        public List<Identifier> RequiredOtherItems;
+        public float TotalCommonness;
+        public bool IsRandom;
+    }
+
+    public class GroupedUsage
+    {
+        public ItemPrefab TargetItem;
+        public List<Identifier> MachineIds;
+        public float AmountCreated;
+        public float AmountRequired;
     }
 
     public class GUIDesplegableBox

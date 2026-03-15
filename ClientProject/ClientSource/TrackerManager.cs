@@ -2,10 +2,12 @@
 // This file is licensed under the GNU GPLv3.
 // See the LICENSE file in the project root for details.
 
+#pragma warning disable IDE0130
+#pragma warning disable IDE0079
+#pragma warning disable IDE0290
+
 using Barotrauma;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SOS
 {
@@ -54,7 +56,7 @@ namespace SOS
                 bool hasEnough = owned >= req.Amount;
 
                 string name = req.FirstMatchingPrefab?.Name.Value ?? TextSOS.Get("sos.gen.unknown", "???").Value;
-                ingredientTexts[i].Text = $"{(hasEnough ? "•" : "○")} {name}: {owned}/{req.Amount}";
+                ingredientTexts[i].Text = $"{(hasEnough ? "•" : "-")} {name}: {owned}/{req.Amount}";
                 ingredientTexts[i].TextColor = hasEnough ? Color.LightGreen : Color.Salmon;
                 i++;
             }

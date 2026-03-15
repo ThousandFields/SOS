@@ -2,18 +2,18 @@
 // This file is licensed under the GNU GPLv3.
 // See the LICENSE file in the project root for details.
 
-using Barotrauma;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Barotrauma;
 
 namespace SOS
 {
     // MARK: RecipeAnalyzer
     public static class RecipeAnalyzer
     {
-        private static readonly Dictionary<Identifier, List<Tuple<ItemPrefab, FabricationRecipe>>> usesCache = new Dictionary<Identifier, List<Tuple<ItemPrefab, FabricationRecipe>>>();
-        private static readonly Dictionary<Identifier, List<ItemPrefab>> sourcesCache = new Dictionary<Identifier, List<ItemPrefab>>();
+        private static readonly Dictionary<Identifier, List<Tuple<ItemPrefab, FabricationRecipe>>> usesCache = new();
+        private static readonly Dictionary<Identifier, List<Tuple<ItemPrefab, DeconstructItem>>> sourcesCache = new();
 
         private const int MaxAnalysisCacheSize = 30;
         private static readonly Dictionary<Identifier, ItemAnalysis> analysisCache = new Dictionary<Identifier, ItemAnalysis>();
@@ -92,18 +92,23 @@ namespace SOS
             return results;
         }
 
-        public static List<ItemPrefab> GetSourcesFromDeconstruction(ItemPrefab targetItem)
+        public static List<Tuple<ItemPrefab, DeconstructItem>> GetSourcesFromDeconstruction(ItemPrefab targetItem)
         {
-            if (targetItem == null) return new List<ItemPrefab>();
+            if (targetItem == null) return new List<Tuple<ItemPrefab, DeconstructItem>>();
 
             if (sourcesCache.TryGetValue(targetItem.Identifier, out var cachedResult)) return cachedResult;
 
-            var results = new List<ItemPrefab>();
+            var results = new List<Tuple<ItemPrefab, DeconstructItem>>();
             foreach (var prefab in ItemPrefab.Prefabs)
             {
-                if (!prefab.DeconstructItems.IsDefaultOrEmpty && prefab.DeconstructItems.Any(di => di.ItemIdentifier == targetItem.Identifier))
+                if (prefab.DeconstructItems.IsDefaultOrEmpty) continue;
+
+                foreach (var di in prefab.DeconstructItems)
                 {
-                    results.Add(prefab);
+                    if (di.ItemIdentifier == targetItem.Identifier)
+                    {
+                        results.Add(new Tuple<ItemPrefab, DeconstructItem>(prefab, di));
+                    }
                 }
             }
 
