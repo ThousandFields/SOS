@@ -1,6 +1,6 @@
 # S.O.S. - Standard Operations Schematics
 
-![Banner](Assets/SOS_LOGO.png)
+![Banner](Assets/SOS_Background.png)
 
 ---
 
@@ -9,10 +9,6 @@
 [![Steam Workshop](https://img.shields.io/badge/Steam_Workshop-Add_here-1B2838?style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/sharedfiles/filedetails/?id=3682891282)
 
 ---
-
- **WARN:** PERSONAL PROBLEMS:
-> Hello, sorry, but I just want to let you know that I am from Cuba and right now we have just entered another "general blackout", which means that I will not have electricity or connection for at least 3 days until I don't know when. Therefore I will not be able to accept your issues or do anything in the project for the next few days, I apologize for that, and as soon as I return I promise to solve your issue. A thousand apologies and thanks.
-
 
 **S.O.S.** is a high-performance recipe browser and material tracking utility for **Barotrauma**. Designed to be the ultimate companion for both vanilla and heavily modded campaigns (like Neurotrauma or BaroCraftables), it provides a seamless, integrated interface to explore the complex economy of Europa.
 
@@ -27,7 +23,7 @@
 - **Dynamic Meta-Info:** View base prices, item tags, stack sizes, and detailed descriptions in a structured Wiki-style panel.
 - **Favorites System:** Pin your most-used items to the top of the search results for instant access.
 - **Smart Navigation:** Web-browser style history (Back/Forward) with full keyboard and mouse shortcut support.
-- **Multi-language:** Native support for English and Spanish
+- **Multi-language:** Native support for English, Spanish, Russian, French and Chinese. (Last 3 are translated by AI, if anyone wants to correct them, are free to make a pull request.)
 
 ## Controls
 

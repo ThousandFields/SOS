@@ -53,6 +53,8 @@ namespace SOS
         private const int SidebarHiddenThreshold = 70;
         private const int SidebarCompactThreshold = 240;
         private const int CenterCompactThreshold = 250;
+        private const int MinCenterWidth = 200;
+        private int lastCenterWForReflow = 0;
 
         private ItemPrefab? currentItem;
         private List<FabricationRecipe>? currentCraft;
@@ -402,6 +404,15 @@ namespace SOS
             int leftW = leftPanel.Rect.Width;
             int rightW = rightPanel.Rect.Width;
 
+            int totalAvailableForSides = areaRect.Width - MinCenterWidth - (spacing * 2);
+            if (leftW + rightW > totalAvailableForSides)
+            {
+                float totalSides = (float)leftW + rightW + 0.001f;
+                float leftRatio = leftW / totalSides;
+                leftW = (int)(totalAvailableForSides * leftRatio);
+                rightW = totalAvailableForSides - leftW;
+            }
+
             centerPanelContainer.RectTransform.AbsoluteOffset = new Point(leftW + spacing, 0);
             int centerWidth = Math.Max(0, areaRect.Width - leftW - rightW - (spacing * 2));
             centerPanelContainer.RectTransform.NonScaledSize = new Point(centerWidth, areaRect.Height);
@@ -422,6 +433,13 @@ namespace SOS
             }
 
             bool needsCenterRefresh = newCenterMode != centerPanelMode;
+
+            if (centerPanelMode == DisplayMode.Compact && Math.Abs(centerWidth - lastCenterWForReflow) > 34)
+            {
+                needsCenterRefresh = true;
+                lastCenterWForReflow = centerWidth;
+            }
+
             bool needsRightRefresh = newRightMode != rightPanelMode;
 
             if (needsLeftRefresh)
@@ -435,6 +453,8 @@ namespace SOS
             if (needsCenterRefresh)
             {
                 centerPanelMode = newCenterMode;
+                lastCenterWForReflow = centerWidth;
+
                 if (currentItem != null && currentCraft != null && currentDecon != null && currentUses != null && currentSources != null)
                 {
                     UpdateDetailsPanel(currentItem, currentCraft, currentDecon, currentUses, currentSources);

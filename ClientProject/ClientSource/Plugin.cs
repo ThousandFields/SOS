@@ -31,7 +31,7 @@ namespace SOS
             DebugConsole.commands.Add(new DebugConsole.Command(
                 name: "debugsos",
                 help: "Abre la ventana de pruebas de UI Escalable.",
-                onExecute: _ => 
+                onExecute: _ =>
                 {
                     DebugSOSWindow.Instance?.Destroy();
                     InitDebugSOSWindow();
