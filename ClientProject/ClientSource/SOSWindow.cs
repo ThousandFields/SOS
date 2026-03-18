@@ -50,6 +50,8 @@ namespace SOS
         private DisplayMode rightPanelMode = DisplayMode.Normal;
         private int lastLeftWForReflow = 0;
 
+        private const int HeaderHeight = 48;
+        private const int BottomMargin = 10;
         private const int SidebarHiddenThreshold = 70;
         private const int SidebarCompactThreshold = 240;
         private const int CenterCompactThreshold = 250;
@@ -88,9 +90,13 @@ namespace SOS
                 mainFrame.RectTransform.AbsoluteOffset = controller.WindowPosition.Value;
             }
 
-            var topBar = new GUIFrame(new RectTransform(new Vector2(1.0f, 0.06f), mainFrame.RectTransform, Anchor.TopCenter), "GUIFrameBottom");
-            topBar.RectTransform.MinSize = new Point(0, 45);
-            _ = new GUITextBlock(new RectTransform(Vector2.One, topBar.RectTransform), TextSOS.Get("sos.window.title", "SOS - Recipe Browser"), textAlignment: Alignment.Center, font: GUIStyle.LargeFont);
+            var topBar = new GUIFrame(new RectTransform(new Vector2(1.0f, 0.0f), mainFrame.RectTransform, Anchor.TopCenter), "GUIFrameBottom");
+            topBar.RectTransform.MinSize = new Point(0, HeaderHeight);
+            topBar.RectTransform.MaxSize = new Point(int.MaxValue, HeaderHeight);
+
+            _ = new GUITextBlock(new RectTransform(Vector2.One, topBar.RectTransform),
+                TextSOS.Get("sos.window.title", "SOS - Recipe Browser"),
+                textAlignment: Alignment.Center, font: GUIStyle.LargeFont);
 
             var historyLayout = new GUILayoutGroup(new RectTransform(new Vector2(0.12f, 0.8f), topBar.RectTransform, Anchor.CenterLeft) { AbsoluteOffset = new Point(10, 0) }, isHorizontal: true) { RelativeSpacing = 0.05f };
             btnBack = new GUIButton(new RectTransform(new Vector2(0.45f, 1f), historyLayout.RectTransform), "", style: "GUIButtonToggleLeft")
@@ -117,7 +123,7 @@ namespace SOS
                 ToolTip = TextSOS.Get("sos.window.clear_hud_tooltip", "Clears the active HUD tracker")
             };
 
-            contentArea = new GUIFrame(new RectTransform(new Vector2(0.98f, 0.92f), mainFrame.RectTransform, Anchor.BottomCenter) { AbsoluteOffset = new Point(0, 5) }, style: null);
+            contentArea = new GUIFrame(new RectTransform(new Vector2(0.98f, 0.0f), mainFrame.RectTransform, Anchor.BottomCenter), style: null);
 
             leftPanel = new GUIResizableFrame(new RectTransform(new Vector2(0.20f, 1f), contentArea.RectTransform, Anchor.TopLeft), style: "InnerFrame")
             {
@@ -419,7 +425,10 @@ namespace SOS
 
         private void UpdateLayout()
         {
-            if (contentArea == null || leftPanel == null || rightPanel == null || centerPanelContainer == null) return;
+            if (mainFrame == null || contentArea == null || leftPanel == null || rightPanel == null || centerPanelContainer == null) return;
+
+            int availableHeight = mainFrame.Rect.Height - HeaderHeight - BottomMargin;
+            contentArea.RectTransform.NonScaledSize = new Point(contentArea.Rect.Width, availableHeight);
 
             Rectangle areaRect = contentArea.Rect;
             if (areaRect.Width <= 0) return;
@@ -439,9 +448,9 @@ namespace SOS
 
             centerPanelContainer.RectTransform.AbsoluteOffset = new Point(leftW + spacing, 0);
             int centerWidth = Math.Max(0, areaRect.Width - leftW - rightW - (spacing * 2));
-            centerPanelContainer.RectTransform.NonScaledSize = new Point(centerWidth, areaRect.Height);
 
             leftPanel.RectTransform.NonScaledSize = new Point(leftW, areaRect.Height);
+            centerPanelContainer.RectTransform.NonScaledSize = new Point(centerWidth, areaRect.Height);
             rightPanel.RectTransform.NonScaledSize = new Point(rightW, areaRect.Height);
 
             var newLeftMode = GetModeForWidth(leftW, SidebarHiddenThreshold, SidebarCompactThreshold);
