@@ -21,11 +21,15 @@
 - **Comprehensive Browser:** View Fabrication, Deconstruction, and "Used In" recipes for any item in the game.
 - **HUD Tracker:** Track ingredients in real-time with an on-screen checklist that updates as you gather materials.
 - **Dynamic Meta-Info:** View base prices, item tags, stack sizes, and detailed descriptions in a structured Wiki-style panel.
-- **Favorites System:** Pin your most-used items to the top of the search results for instant access.
-- **Smart Navigation:** Web-browser style history (Back/Forward) with full keyboard and mouse shortcut support.
-- **Multi-language:** Native support for English, Spanish, Russian, French and Chinese. (Last 3 are translated by AI, if anyone wants to correct them, are free to make a pull request.)
+- **Responsive UI:** High-precision resizable interface that ensures the UI is always displayed in any position, scale or aspect ratio do you want, as a real window.
+- **Adaptive Layout Modes:** Smart "Compact" view that intelligently wraps icon grids and scales content to fit any window dimension.
+- **Detailed Recipe Analytics:** Refined "Obtain" and "Usage" sections with context-aware filtering and smart ingredient wrapping.
+- **Favorites & History:** Web-browser style navigation (Back/Forward) and a pinning system for quick access to frequent items.
+- **Multi-language Support:** Native support for English, Spanish, Russian, French, and Chinese. (Last 3 are translated by AI, if anyone wants to correct them, are free to make a pull request and help us.)
 
 ## Controls
+
+### General
 
 - **[J]**: Open / Close the SOS Menu.
 - **[Backspace]** or **[Mouse 4]**: Navigate to previous item.
@@ -34,11 +38,18 @@
 - **[Right Click]**: Open context menu (Track item, Toggle Favorite, etc.).
 - **[Escape]**: Close window.
 
+### Window
+
+- **[Drag Title Bar]**: Move the window.
+- **[Drag Borders or Corners]**: Resize the window.
+- **[Ctrl + Drag Borders or Corners]**: Resize the window with a parallel aspect ratio.
+- **[Shift + Drag Borders or Corners]**: Move the window.
+
 ## Project Status: Beta
 
 **S.O.S.** is currently in its Beta stage. While the core functionality is stable and high-performing, we are working towards deep integration with the game's mechanics and immersion.
 
-### Roadmap: The Neural Link System
+### Late Mod Roadmap: The Neural Link System
 
 In future updates, access to the S.O.S. interface will be gated behind a **Chip Progression System**. Players will need to craft and consume specialized neural chips to unlock different modules of the database.
 
@@ -50,14 +61,11 @@ In future updates, access to the S.O.S. interface will be gated behind a **Chip 
 - **Deconstructor Chip (Lv. 2):** Unlocks "Reverse Deconstruction" (View which items provide this material when recycled).
 - **Medical Chip (Lv. 1 & 2):** Specialized modules for medical recipes and advanced chemistry.
 
-#### Crafting & Acquisition
+> Note: This proposal is merely an idea at the moment; there is no guarantee that it will be implemented in this specific manner in the future—it could take a different, more convenient form.
 
-- **Base Components:** Crafting will require **FPGA Circuits**, **Steel**, **Plastic**, and a new **Basic Data Chip** (found in wrecks or crafted).
-- **Advanced Chips:** Level 2 modules will require an **Advanced Data Chip**, rare loot found only in high-risk zones or complex recipes.
-- **Specialization:** You can cross-grade modules; for example, a **Deconstructor Chip** can be obtained by recycling a Fabricator or Medical chip.
+*Stay tuned for these updates as we move toward the 1.0 Full Release.*
 
 ---
-*Stay tuned for these updates as we move toward the 1.0 Full Release.*
 
 ## Common questions
 
