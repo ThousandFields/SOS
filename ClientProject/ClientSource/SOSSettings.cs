@@ -6,10 +6,6 @@
 #pragma warning disable IDE0079
 #pragma warning disable IDE0290
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using Barotrauma;
 using Microsoft.Xna.Framework;
@@ -44,12 +40,19 @@ namespace SOS
     public static class SettingsManager
     {
         private const int CurrentSaveVersion = 1;
-        private const string ConfigPath = "SOS_Settings.xml";
+        private const string NewConfigPath = "Data/sossettings.xml";
+        private const string OldConfigPath = "SOS_Settings.xml";
 
         public static void Save(SettingsData data)
         {
             try
             {
+                string? directory = Path.GetDirectoryName(NewConfigPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
                 var doc = new XDocument(
                     new XElement("SOSSettings",
                         new XAttribute("version", CurrentSaveVersion),
@@ -89,7 +92,8 @@ namespace SOS
                     )
                 );
 
-                doc.Save(ConfigPath);
+                doc.Save(NewConfigPath);
+
 #if DEBUG
                 LuaCsLogger.LogMessage(TextSOS.Get("sos.config.saved", "[SOS] Settings saved (v[version]).").Replace("[version]", CurrentSaveVersion.ToString()).Value);
 #endif
@@ -100,14 +104,28 @@ namespace SOS
             }
         }
 
+
         public static SettingsData Load()
         {
             var data = new SettingsData();
-            if (!File.Exists(ConfigPath)) return data;
+
+            string activePath = NewConfigPath;
+            if (!File.Exists(NewConfigPath))
+            {
+                if (File.Exists(OldConfigPath))
+                {
+                    activePath = OldConfigPath;
+                    LuaCsLogger.LogMessage(TextSOS.Get("sos.config.migrating", "[SOS] Migrating settings from old path...").Value);
+                }
+                else
+                {
+                    return data;
+                }
+            }
 
             try
             {
-                XDocument doc = XDocument.Load(ConfigPath);
+                XDocument doc = XDocument.Load(activePath);
                 XElement? root = doc.Element("SOSSettings");
                 if (root == null) return data;
 
@@ -159,12 +177,12 @@ namespace SOS
                     {
                         foreach (var l in layouts)
                         {
-                            string name = l.Attribute("name")?.Value ?? "Unknown";
+                            string name = l.Attribute("name")?.Value ?? "Unnamed";
                             data.CustomLayouts[name] = new SavedLayout
                             {
-                                WindowSize = new Point(int.Parse(l.Attribute("winW")?.Value ?? "0"), int.Parse(l.Attribute("winH")?.Value ?? "0")),
-                                LeftPanelWidth = int.Parse(l.Attribute("leftW")?.Value ?? "0"),
-                                RightPanelWidth = int.Parse(l.Attribute("rightW")?.Value ?? "0")
+                                WindowSize = new Point(ImGoodParser(l.Attribute("winW")?.Value, 0), ImGoodParser(l.Attribute("winH")?.Value, 0)),
+                                LeftPanelWidth = ImGoodParser(l.Attribute("leftW")?.Value, 0),
+                                RightPanelWidth = ImGoodParser(l.Attribute("rightW")?.Value, 0)
                             };
                         }
                     }
