@@ -33,6 +33,8 @@ namespace SOS
         public int? LeftPanelWidth { get; set; }
         public int? RightPanelWidth { get; set; }
 
+        public Dictionary<string, SavedLayout> CustomLayouts { get; } = new();
+
         private bool isDirty = false;
 
         public SOSController()
@@ -109,7 +111,8 @@ namespace SOS
                 WindowSize = this.WindowSize,
                 WindowPosition = this.WindowPosition,
                 LeftPanelWidth = this.LeftPanelWidth,
-                RightPanelWidth = this.RightPanelWidth
+                RightPanelWidth = this.RightPanelWidth,
+                CustomLayouts = this.CustomLayouts
             };
 
             SettingsManager.Save(data);
@@ -144,6 +147,35 @@ namespace SOS
                     Tracker.SetTrackedItem(targetPrefab, specificRecipe);
                 }
             }
+
+            foreach (var kvp in data.CustomLayouts) CustomLayouts[kvp.Key] = kvp.Value;
+        }
+
+        public void ApplyLayout(Point size, int leftW, int rightW)
+        {
+            WindowSize = size;
+            LeftPanelWidth = leftW;
+            RightPanelWidth = rightW;
+            MarkDirty();
+            mainWindow?.ForceLayoutUpdate();
+        }
+
+        public void SaveCurrentLayout(string name)
+        {
+            if (mainWindow == null) return;
+            
+            CustomLayouts[name] = new SavedLayout
+            {
+                WindowSize = mainWindow.GetCurrentSize(),
+                LeftPanelWidth = mainWindow.GetLeftWidth(),
+                RightPanelWidth = mainWindow.GetRightWidth()
+            };
+            MarkDirty();
+        }
+
+        public void DeleteLayout(string name)
+        {
+            if (CustomLayouts.Remove(name)) MarkDirty();
         }
 
         private void UpdateWindowDetails(ItemPrefab item)

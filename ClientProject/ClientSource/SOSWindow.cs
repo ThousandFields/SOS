@@ -8,6 +8,7 @@
 
 using Barotrauma;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SOS
 {
@@ -37,6 +38,7 @@ namespace SOS
         private readonly GUIFrame? centerPanelContainer;
         private readonly GUIResizableFrame? rightPanel;
         private readonly GUIFrame? rightContainer;
+        private GUIFrame? layoutMenuFrame;
 
         private List<ItemPrefab> allFilteredItems = [];
         private int itemsLoaded = 0;
@@ -98,17 +100,26 @@ namespace SOS
                 TextSOS.Get("sos.window.title", "SOS - Recipe Browser"),
                 textAlignment: Alignment.Center, font: GUIStyle.LargeFont);
 
-            var historyLayout = new GUILayoutGroup(new RectTransform(new Vector2(0.12f, 0.8f), topBar.RectTransform, Anchor.CenterLeft) { AbsoluteOffset = new Point(10, 0) }, isHorizontal: true) { RelativeSpacing = 0.05f };
-            btnBack = new GUIButton(new RectTransform(new Vector2(0.45f, 1f), historyLayout.RectTransform), "", style: "GUIButtonToggleLeft")
+            var leftTools = new GUILayoutGroup(new RectTransform(new Vector2(0.35f, 0.8f), topBar.RectTransform, Anchor.CenterLeft) { AbsoluteOffset = new Point(10, 0) }, isHorizontal: true)
             {
-                OnClicked = (_, _) => { controller.NavigateBack(); return true; },
-                ToolTip = TextSOS.Get("sos.window.back", "Back [Backspace]")
+                AbsoluteSpacing = 5,
+                Stretch = false
             };
-            if (btnBack.Children.FirstOrDefault() is GUIImage imgBack) imgBack.SpriteEffects = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
-            btnForward = new GUIButton(new RectTransform(new Vector2(0.45f, 1f), historyLayout.RectTransform), "", style: "GUIButtonToggleRight")
+
+            var btnLayouts = new GUIButton(new RectTransform(new Point(32, 32), leftTools.RectTransform), "", style: "GUIButtonSettings")
             {
-                OnClicked = (_, _) => { controller.NavigateForward(); return true; },
-                ToolTip = TextSOS.Get("sos.window.forward", "Forward [Ctrl+Backspace]")
+                ToolTip = TextSOS.Get("sos.window.settings", "Settings (WIP)"),
+                OnClicked = (btn, _) => { ToggleLayoutMenu(btn); return true; }
+            };
+            btnBack = new GUIButton(new RectTransform(new Point(32, 32), leftTools.RectTransform), "", style: "GUIButtonToggleLeft")
+            {
+                OnClicked = (_, _) => { controller.NavigateBack(); return true; }
+            };
+            if (btnBack.Children.FirstOrDefault() is GUIImage imgB) imgB.SpriteEffects = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+
+            btnForward = new GUIButton(new RectTransform(new Point(32, 32), leftTools.RectTransform), "", style: "GUIButtonToggleRight")
+            {
+                OnClicked = (_, _) => { controller.NavigateForward(); return true; }
             };
 
             var topButtons = new GUILayoutGroup(new RectTransform(new Vector2(0.2f, 0.8f), topBar.RectTransform, Anchor.CenterRight) { AbsoluteOffset = new Point(10, 0) }, isHorizontal: true) { Stretch = false, RelativeSpacing = 0.05f, ChildAnchor = Anchor.CenterRight };
@@ -399,27 +410,29 @@ namespace SOS
 
         public void Update()
         {
-            if (mainFrame != null)
-            {
-                if (GUI.MouseOn == mainFrame || mainFrame.IsParentOf(GUI.MouseOn))
-                {
-                    mainFrame.Selected = true;
-                }
-            }
+            if (mainFrame == null) return;
+
+            mainFrame.AddToGUIUpdateList();
+
+            layoutMenuFrame?.AddToGUIUpdateList();
 
             UpdateLayout();
 
             if (itemList == null || itemsLoaded >= allFilteredItems.Count || isUpdating) return;
 
             int total = allFilteredItems.Count;
-
             int currentIndex = (int)(itemList.ScrollBar.BarScroll * (total - 1));
+            if (currentIndex >= total - 5) LoadNextChunk();
 
-            int threshold = total - 5;
-
-            if (currentIndex >= threshold)
+            if (layoutMenuFrame != null && PlayerInput.PrimaryMouseButtonClicked())
             {
-                LoadNextChunk();
+                bool overButton = GUI.MouseOn is GUIButton b;
+
+                if (!layoutMenuFrame.IsParentOf(GUI.MouseOn) && GUI.MouseOn != layoutMenuFrame && !overButton)
+                {
+                    mainFrame.RemoveChild(layoutMenuFrame);
+                    layoutMenuFrame = null;
+                }
             }
         }
 
@@ -641,9 +654,124 @@ onSecondary
                 section.Draw(builder);
             }
         }
+
+        public Point GetCurrentSize() => mainFrame?.Rect.Size ?? new Point(1000, 700);
+        public int GetLeftWidth() => leftPanel?.Rect.Width ?? 250;
+        public int GetRightWidth() => rightPanel?.Rect.Width ?? 250;
+
+        public void ForceLayoutUpdate()
+        {
+            if (mainFrame == null || leftPanel == null || rightPanel == null) return;
+
+            if (controller.WindowSize.HasValue) mainFrame.RectTransform.NonScaledSize = controller.WindowSize.Value;
+            if (controller.WindowPosition.HasValue) mainFrame.RectTransform.AbsoluteOffset = controller.WindowPosition.Value;
+            if (controller.LeftPanelWidth.HasValue) leftPanel.RectTransform.NonScaledSize = new Point(controller.LeftPanelWidth.Value, leftPanel.Rect.Height);
+            if (controller.RightPanelWidth.HasValue) rightPanel.RectTransform.NonScaledSize = new Point(controller.RightPanelWidth.Value, rightPanel.Rect.Height);
+
+            UpdateLayout();
+        }
+
+        private void ToggleLayoutMenu(GUIComponent anchor)
+        {
+            //if (mainFrame == null) return;
+            if (layoutMenuFrame != null)
+            {
+                mainFrame?.RemoveChild(layoutMenuFrame);
+                layoutMenuFrame = null;
+                return;
+            }
+
+            layoutMenuFrame = new GUIFrame(new RectTransform(new Point(280, 380), mainFrame.RectTransform), style: "InnerFrame")
+            {
+                IgnoreLayoutGroups = true,
+                Color = Color.Black * 0.98f,
+                CanBeFocused = true
+            };
+
+            int localX = anchor.Rect.X - mainFrame.Rect.X;
+            int localY = anchor.Rect.Bottom - mainFrame.Rect.Y + 2;
+            layoutMenuFrame.RectTransform.AbsoluteOffset = new Point(localX, localY);
+
+            var list = new GUIListBox(new RectTransform(new Point(200, 350), layoutMenuFrame.RectTransform, Anchor.TopCenter) { AbsoluteOffset = new Point(0, 10) }, style: null)
+            {
+                Spacing = 4
+            };
+
+            AddGroupHeader(list, "STANDARD");
+            AddPresetRow(list, "Minimal", () => controller.ApplyLayout(new Point(500, 600), 0, 0), false, anchor);
+            AddPresetRow(list, "Medium-List", () => controller.ApplyLayout(new Point(850, 650), 220, 0), false, anchor);
+            AddPresetRow(list, "Medium-Desc", () => controller.ApplyLayout(new Point(850, 650), 0, 250), false, anchor);
+            AddPresetRow(list, "Full View", () => controller.ApplyLayout(new Point(1450, 850), 250, 300), false, anchor);
+
+            if (controller.CustomLayouts.Count > 0)
+            {
+                AddGroupHeader(list, "My PRESETS");
+                foreach (var key in controller.CustomLayouts.Keys.ToList())
+                {
+                    var saved = controller.CustomLayouts[key];
+                    AddPresetRow(list, key, () => controller.ApplyLayout(saved.WindowSize, saved.LeftPanelWidth, saved.RightPanelWidth), true, anchor);
+                }
+            }
+
+            _ = new GUIButton(new RectTransform(new Vector2(0.9f, 0.1f), layoutMenuFrame.RectTransform, Anchor.BottomCenter) { AbsoluteOffset = new Point(0, 10) }, "+ SAVE ACTUAL", style: "DeviceButton")
+            {
+                OnClicked = (_, _) =>
+                {
+                    string newName = $"Layout {controller.CustomLayouts.Count + 1}";
+                    controller.CustomLayouts[newName] = new SavedLayout
+                    {
+                        WindowSize = mainFrame.Rect.Size,
+                        LeftPanelWidth = leftPanel?.Rect.Width ?? 0,
+                        RightPanelWidth = rightPanel?.Rect.Width ?? 0
+                    };
+                    controller.MarkDirty();
+                    ToggleLayoutMenu(anchor);
+                    ToggleLayoutMenu(anchor);
+                    return true;
+                }
+            };
+        }
+
+        private static void AddGroupHeader(GUIListBox list, string text)
+        {
+            var header = new GUIFrame(new RectTransform(new Point(list.Content.Rect.Width, 20), list.Content.RectTransform), style: "GUIFrameBottom") 
+            { 
+                Color = Color.Gray * 0.4f, 
+                CanBeFocused = false 
+            };
+            _ = new GUITextBlock(new RectTransform(Vector2.One, header.RectTransform), text, font: GUIStyle.SmallFont, textAlignment: Alignment.Center) 
+            { 
+                CanBeFocused = false 
+            };
+        }
+
+        private void AddPresetRow(GUIListBox list, string name, Action onApply, bool canDelete, GUIComponent anchor)
+        {
+            var row = new GUILayoutGroup(new RectTransform(new Point(list.Content.Rect.Width, 30), list.Content.RectTransform), isHorizontal: true) { AbsoluteSpacing = 2 };
+
+            var btn = new GUIButton(new RectTransform(new Vector2(canDelete ? 0.82f : 1f, 1f), row.RectTransform), name, style: "ListBoxElement")
+            {
+                OnClicked = (_, _) => { onApply(); ToggleLayoutMenu(anchor); return true; }
+            };
+
+            if (canDelete)
+            {
+                _ = new GUIButton(new RectTransform(new Vector2(0.18f, 1f), row.RectTransform), "", style: "CategoryButton.All")
+                {
+                    OnClicked = (_, _) =>
+                    {
+                        controller.CustomLayouts.Remove(name);
+                        controller.MarkDirty();
+                        ToggleLayoutMenu(anchor);
+                        ToggleLayoutMenu(anchor);
+                        return true;
+                    }
+                };
+            }
+        }
     }
 
-    public class GroupedSource
+        public class GroupedSource
     {
         public ItemPrefab? SourceItem;
         public Identifier[]? MachineIds;

@@ -30,6 +30,14 @@ namespace SOS
         public Point? WindowPosition { get; set; }
         public int? LeftPanelWidth { get; set; }
         public int? RightPanelWidth { get; set; }
+        public Dictionary<string, SavedLayout> CustomLayouts { get; set; } = [];
+    }
+
+    public class SavedLayout
+    {
+        public Point WindowSize { get; set; }
+        public int LeftPanelWidth { get; set; }
+        public int RightPanelWidth { get; set; }
     }
 
     // MARK: - Settings Manager
@@ -67,6 +75,16 @@ namespace SOS
                             new XAttribute("winH", data.WindowSize?.Y ?? 0),
                             new XAttribute("leftW", data.LeftPanelWidth ?? 0),
                             new XAttribute("rightW", data.RightPanelWidth ?? 0)
+                        ),
+
+                        new XElement("Layouts",
+                            data.CustomLayouts.Select(kvp => new XElement("Preset",
+                                new XAttribute("name", kvp.Key),
+                                new XAttribute("winW", kvp.Value.WindowSize.X),
+                                new XAttribute("winH", kvp.Value.WindowSize.Y),
+                                new XAttribute("leftW", kvp.Value.LeftPanelWidth),
+                                new XAttribute("rightW", kvp.Value.RightPanelWidth)
+                            ))
                         )
                     )
                 );
@@ -134,6 +152,21 @@ namespace SOS
 
                         int rightW = ImGoodParser(layout.Attribute("rightW")?.Value, 0);
                         if (rightW > 0) data.RightPanelWidth = rightW;
+                    }
+
+                    var layouts = root.Element("Layouts")?.Elements("Preset");
+                    if (layouts != null)
+                    {
+                        foreach (var l in layouts)
+                        {
+                            string name = l.Attribute("name")?.Value ?? "Unknown";
+                            data.CustomLayouts[name] = new SavedLayout
+                            {
+                                WindowSize = new Point(int.Parse(l.Attribute("winW")?.Value ?? "0"), int.Parse(l.Attribute("winH")?.Value ?? "0")),
+                                LeftPanelWidth = int.Parse(l.Attribute("leftW")?.Value ?? "0"),
+                                RightPanelWidth = int.Parse(l.Attribute("rightW")?.Value ?? "0")
+                            };
+                        }
                     }
                 }
 #if DEBUG
