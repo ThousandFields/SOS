@@ -5,4 +5,5 @@
         <ModDeployDir>D:\ProgramS\ProgramFiles\Steam\steamapps\common\Barotrauma\LocalMods\SOS\</ModDeployDir>
         <AssemblyName>Retype.SOS</AssemblyName>
     </PropertyGroup>
+    <Import Project="CheckLocalizations.targets" />
 </Project>
