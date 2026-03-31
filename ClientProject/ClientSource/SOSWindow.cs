@@ -71,6 +71,9 @@ namespace SOS
         private List<Tuple<ItemPrefab, FabricationRecipe>>? currentUses;
         private List<Tuple<ItemPrefab, DeconstructItem>>? currentSources;
 
+        private double searchExecutionTime = 0;
+        private string? pendingSearchQuery = null;
+
         private static readonly Dictionary<Identifier, string> itemSlotCache = [];
 
         public SOSWindow(SOSController controller)
@@ -184,7 +187,12 @@ namespace SOS
                 "  !ID         (e.g., !weldingtool)\n" +
                 "Example: 'Brain @NT #Medical $surgery'");
 
-            searchBox.OnTextChanged += (_, text) => { controller.LastSearchQuery = text; UpdateSearch(text); return true; };
+            searchBox.OnTextChanged += (_, text) =>
+            {
+                pendingSearchQuery = text;
+                searchExecutionTime = Timing.TotalTime + 0.25;
+                return true;
+            };
 
             itemList = new GUIListBox(new RectTransform(new Vector2(1f, 1f), leftLayout.RectTransform), style: "GUIListBox")
             {
@@ -490,6 +498,13 @@ namespace SOS
                     mainFrame.RemoveChild(layoutMenuFrame);
                     layoutMenuFrame = null;
                 }
+            }
+
+            if (pendingSearchQuery != null && Timing.TotalTime >= searchExecutionTime)
+            {
+                controller.LastSearchQuery = pendingSearchQuery;
+                UpdateSearch(pendingSearchQuery);
+                pendingSearchQuery = null;
             }
         }
 
