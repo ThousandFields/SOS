@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!-- IMPORTANT: Should point to <Barotrauma_Install>\LocalMods\<MyModName>\ -->
         <!-- IMPORTANT: ModDeplyDir Path must end with '\' -->
-        <ModDeployDir>D:\ProgramS\ProgramFiles\Steam\steamapps\common\Barotrauma\LocalMods\SOS\</ModDeployDir>
+        <ModDeployDir>C:\Program Files (x86)\Steam\steamapps\common\Barotrauma\LocalMods\SOS_Mod\</ModDeployDir>
         <AssemblyName>Retype.SOS</AssemblyName>
     </PropertyGroup>
     <Import Project="CheckLocalizations.targets" />
